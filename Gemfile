@@ -78,3 +78,4 @@ end
 
 gem 'haml-rails'
 gem 'html2haml'
+gem 'sassc-rails'
