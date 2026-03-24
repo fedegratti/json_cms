@@ -6,7 +6,8 @@
       "Bash(bin/rails runner:*)",
       "Bash(bin/rails routes:*)",
       "Bash(bin/rubocop app/controllers/cms_controller.rb app/models/json_document.rb 2>&1)",
-      "Bash(bundle exec:*)"
+      "Bash(bundle exec:*)",
+      "Bash(bin/rails db:test:prepare 2>&1)"
     ]
   }
 }
