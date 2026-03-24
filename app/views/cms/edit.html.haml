@@ -1,0 +1,20 @@
+.editor{ data: { controller: "json-editor",
+                  json_editor_json_value: @document.content,
+                  json_editor_filename_value: @document.filename } }
+
+  .editor__toolbar
+    .editor__toolbar-left
+      = link_to "← New file", root_path, class: "editor__back"
+      %span.editor__filename= @document.filename
+
+    .editor__toolbar-right
+      %button.editor__download-btn{ data: { action: "click->json-editor#download" } }
+        Download JSON
+
+  .editor__body
+    .editor__tree{ data: { "json-editor-target": "tree" } }
+
+  = form_tag download_path, method: :post, class: "editor__download-form",
+      data: { "json-editor-target": "downloadForm", turbo: "false" } do
+    = hidden_field_tag "json_data",  "", data: { "json-editor-target": "jsonInput" }
+    = hidden_field_tag "filename", @document.filename

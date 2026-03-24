@@ -1,0 +1,448 @@
+// ─── Type colours ────────────────────────────────────────────────────────────
+$c-string:  #7ec8e3;   // blue
+$c-number:  #f0a500;   // amber
+$c-boolean: #5ec46a;   // green
+$c-null:    #8888aa;   // muted purple
+$c-object:  #b48ead;   // lavender
+$c-array:   #c882c8;   // pink-purple
+$c-key:     #e0c97a;   // gold
+$c-brace:   #888;
+$c-border:  #333;
+$c-bg:      #1a1a1a;
+$c-toolbar: #161616;
+$c-hover:   #2a2a2a;
+
+// ─── Layout ──────────────────────────────────────────────────────────────────
+.editor {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 13px;
+}
+
+.editor__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem;
+  height: 52px;
+  min-height: 52px;
+  background: $c-toolbar;
+  border-bottom: 1px solid $c-border;
+  gap: 1rem;
+}
+
+.editor__toolbar-left,
+.editor__toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.editor__back {
+  color: #888;
+  font-size: 12px;
+  text-decoration: none;
+  padding: 4px 8px;
+  border: 1px solid $c-border;
+  border-radius: 4px;
+  transition: color 0.15s, border-color 0.15s;
+
+  &:hover {
+    color: $white;
+    border-color: #555;
+  }
+}
+
+.editor__filename {
+  color: #aaa;
+  font-size: 12px;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor__download-btn {
+  padding: 6px 16px;
+  background: $light-blue;
+  color: $white;
+  border: none;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 0.85; }
+}
+
+.editor__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem 1.5rem 3rem;
+  background: $c-bg;
+  scrollbar-width: thin;
+  scrollbar-color: #444 transparent;
+}
+
+.editor__download-form { display: none; }
+
+// ─── JSON Node tree ───────────────────────────────────────────────────────────
+
+.jn {
+  position: relative;
+}
+
+// Vertical connector line for children
+.jn__body {
+  padding-left: 1.5rem;
+  border-left: 1px solid $c-border;
+  margin-left: 0.6rem;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.jn__head {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 0;
+}
+
+.jn__toggle {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 0 2px;
+  font-size: 10px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.1s;
+
+  &:hover { color: $white; }
+}
+
+.jn__brace {
+  color: $c-brace;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.jn__brace--close {
+  margin-top: 2px;
+  display: block;
+  padding-left: 1px;
+}
+
+.jn--array > .jn__brace--close,
+.jn--object > .jn__brace--close {
+  margin-left: 1.15rem;
+}
+
+.jn__count {
+  color: #555;
+  font-size: 11px;
+}
+
+.jn__type-badge {
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 600;
+  opacity: 0.7;
+
+  &--object { color: $c-object; border: 1px solid $c-object; }
+  &--array  { color: $c-array;  border: 1px solid $c-array;  }
+}
+
+// ─── Entry row ────────────────────────────────────────────────────────────────
+
+.jn__entry {
+  padding: 1px 0;
+
+  &:hover > .jn__entry-row .jn__del { opacity: 1; }
+}
+
+.jn__entry-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 0;
+  border-radius: 4px;
+
+  &:hover { background: $c-hover; }
+}
+
+.jn__entry-children {
+  padding-left: 1.2rem;
+}
+
+.jn__del {
+  background: none;
+  border: none;
+  color: #c0392b;
+  cursor: pointer;
+  font-size: 11px;
+  padding: 0 4px;
+  opacity: 0;
+  flex-shrink: 0;
+  transition: opacity 0.1s, color 0.1s;
+
+  &:hover { color: #e74c3c; }
+}
+
+.jn__index {
+  color: $c-number;
+  font-size: 12px;
+  min-width: 20px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.jn__key {
+  @include user-select(text);
+  background: transparent;
+  border: 1px solid transparent;
+  color: $c-key;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 1px 4px;
+  border-radius: 3px;
+  min-width: 60px;
+  max-width: 220px;
+  width: auto;
+  transition: border-color 0.1s, background 0.1s;
+
+  &:hover {
+    border-color: #444;
+    background: $c-bg;
+  }
+
+  &:focus {
+    border-color: $c-key;
+    background: #111;
+    outline: none;
+  }
+}
+
+.jn__colon {
+  color: $c-brace;
+  flex-shrink: 0;
+}
+
+// ─── Value widgets ────────────────────────────────────────────────────────────
+
+.jn__val-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.jn__type-select {
+  @include user-select(none);
+  appearance: none;
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 3px;
+  color: #666;
+  font-family: inherit;
+  font-size: 10px;
+  padding: 1px 4px;
+  cursor: pointer;
+  transition: border-color 0.1s, color 0.1s;
+
+  &:hover, &:focus {
+    border-color: #555;
+    color: #aaa;
+    outline: none;
+  }
+
+  &--string  { color: $c-string;  border-color: rgba($c-string,  0.3); }
+  &--number  { color: $c-number;  border-color: rgba($c-number,  0.3); }
+  &--boolean { color: $c-boolean; border-color: rgba($c-boolean, 0.3); }
+  &--null    { color: $c-null;    border-color: rgba($c-null,    0.3); }
+  &--object  { color: $c-object;  border-color: rgba($c-object,  0.3); }
+  &--array   { color: $c-array;   border-color: rgba($c-array,   0.3); }
+}
+
+.jn__val {
+  @include user-select(text);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 1px 5px;
+  transition: border-color 0.1s, background 0.1s;
+
+  &:hover  { border-color: #444; background: $c-bg; }
+  &:focus  { border-color: #555; background: #111; outline: none; }
+
+  &--string  { color: $c-string;  min-width: 120px; }
+  &--number  { color: $c-number;  width: 100px; }
+  &--boolean { color: $c-boolean; appearance: none; cursor: pointer;
+               background: #222; border-color: rgba($c-boolean, 0.3); }
+  &--null    { color: $c-null;    font-style: italic; cursor: default; }
+}
+
+// ─── Add / root-primitive ────────────────────────────────────────────────────
+
+.jn__add-btn {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: 1px dashed #333;
+  border-radius: 4px;
+  color: #555;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  margin: 3px 0 2px 0;
+  padding: 3px 8px;
+  transition: border-color 0.15s, color 0.15s;
+
+  &:hover {
+    border-color: #666;
+    color: #aaa;
+  }
+}
+
+.jn__root-primitive {
+  padding: 8px 0;
+}
+
+// ─── Upload page ─────────────────────────────────────────────────────────────
+
+.upload-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.upload-page__inner {
+  width: 100%;
+  max-width: 560px;
+}
+
+.upload-page__title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: $white;
+  letter-spacing: -0.5px;
+}
+
+.upload-page__alert {
+  background: rgba(#c0392b, 0.15);
+  border: 1px solid rgba(#c0392b, 0.4);
+  border-radius: 6px;
+  color: #e74c3c;
+  font-size: 13px;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.upload-form__section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.upload-form__label {
+  font-size: 13px;
+  color: #aaa;
+  font-weight: 500;
+}
+
+.upload-form__label-highlight {
+  color: $light-blue;
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+}
+
+.upload-form__dropzone {
+  position: relative;
+  border: 2px dashed #333;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s;
+
+  &:hover { border-color: #555; }
+}
+
+.upload-form__file {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.upload-form__dropzone-hint {
+  color: #555;
+  font-size: 13px;
+  pointer-events: none;
+}
+
+.upload-form__divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #444;
+  font-size: 12px;
+
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #333;
+  }
+}
+
+.upload-form__textarea {
+  @include user-select(text);
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: $white;
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  padding: 0.75rem 1rem;
+  resize: vertical;
+  width: 100%;
+  transition: border-color 0.15s;
+
+  &:focus    { border-color: #555; outline: none; }
+  &::placeholder { color: #444; }
+}
+
+.upload-form__submit {
+  align-self: flex-end;
+  background: $light-blue;
+  border: none;
+  border-radius: 6px;
+  color: $white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 24px;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 0.85; }
+}

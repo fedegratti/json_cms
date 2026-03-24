@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bin/rails generate:*)",
+      "Bash(bin/rails db:create db:migrate 2>&1)",
+      "Bash(bin/rails runner:*)",
+      "Bash(bin/rails routes:*)",
+      "Bash(bin/rubocop app/controllers/cms_controller.rb app/models/json_document.rb 2>&1)",
+      "Bash(bundle exec:*)"
+    ]
+  }
+}

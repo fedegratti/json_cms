@@ -29,3 +29,5 @@
 
 en:
   hello: "Hello world"
+  errors:
+    document_not_found: "Document not found."

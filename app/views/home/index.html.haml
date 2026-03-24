@@ -1,4 +1,27 @@
-.section.home
-    .home__container
-        %h1 Welcome to JSON CMS!
-        %p This is a simple content management system built with Ruby on Rails. 
+.upload-page
+  .upload-page__inner
+    %h1.upload-page__title JSON CMS
+
+    - if flash[:alert]
+      .upload-page__alert= flash[:alert]
+
+    = form_tag upload_path, multipart: true, class: "upload-form" do
+      .upload-form__section
+        %label.upload-form__label{ for: "file" }
+          Upload a
+          %span.upload-form__label-highlight .json
+          file
+        .upload-form__dropzone
+          %input.upload-form__file{ type: "file", name: "file", id: "file", accept: ".json" }
+          %span.upload-form__dropzone-hint Drag & drop or click to choose
+
+      .upload-form__divider
+        %span OR
+
+      .upload-form__section
+        %label.upload-form__label{ for: "json_text" } Paste JSON
+        %textarea.upload-form__textarea{ name: "json_text", id: "json_text",
+                                         rows: 10, spellcheck: false,
+                                         placeholder: '{ "key": "value" }' }
+
+      %button.upload-form__submit{ type: "submit" } Load JSON
