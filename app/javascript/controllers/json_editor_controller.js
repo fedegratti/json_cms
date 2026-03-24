@@ -7,6 +7,8 @@ export default class extends Controller {
   connect() {
     this.doc       = this.safeParse(this.jsonValue)
     this.collapsed = new Set()
+    this.history   = []
+    this.future    = []
     this.render()
   }
 
@@ -130,7 +132,7 @@ export default class extends Controller {
       : `<input class="jn__key" type="text" value="${this.esc(String(key))}"
                spellcheck="false"
                data-path="${p}"
-               data-action="blur->json-editor#renameKey keydown->json-editor#keyInputKeydown" />`
+               data-action="focus->json-editor#captureHistory blur->json-editor#renameKey keydown->json-editor#keyInputKeydown" />`
 
     return `
       <div class="jn__entry" data-path="${p}">
@@ -154,7 +156,7 @@ export default class extends Controller {
     const typeSelect = `
       <select class="jn__type-select jn__type-select--${type}"
               data-path="${p}"
-              data-action="change->json-editor#changeType">
+              data-action="focus->json-editor#captureHistory change->json-editor#changeType">
         ${["string", "number", "boolean", "null", "object", "array"].map(t =>
           `<option value="${t}"${t === type ? " selected" : ""}>${t}</option>`
         ).join("")}
@@ -167,18 +169,18 @@ export default class extends Controller {
                         value="${this.esc(val)}"
                         spellcheck="false"
                         data-path="${p}"
-                        data-action="input->json-editor#updateVal" />`
+                        data-action="focus->json-editor#captureHistory input->json-editor#updateVal" />`
         break
       case "number":
         input = `<input class="jn__val jn__val--number" type="number"
                         value="${val}"
                         data-path="${p}"
-                        data-action="input->json-editor#updateVal" />`
+                        data-action="focus->json-editor#captureHistory input->json-editor#updateVal" />`
         break
       case "boolean":
         input = `<select class="jn__val jn__val--boolean"
                          data-path="${p}"
-                         data-action="change->json-editor#updateVal">
+                         data-action="focus->json-editor#captureHistory change->json-editor#updateVal">
                    <option value="true"${val === true ? " selected" : ""}>true</option>
                    <option value="false"${val === false ? " selected" : ""}>false</option>
                  </select>`
@@ -189,6 +191,40 @@ export default class extends Controller {
     }
 
     return `<span class="jn__val-group">${typeSelect}${input}</span>`
+  }
+
+  // ─── History (undo / redo) ───────────────────────────────────────────────────
+
+  pushHistory() {
+    const snap = JSON.stringify(this.doc)
+    if (this.history.at(-1) === snap) return   // deduplicate consecutive identical states
+    this.history.push(snap)
+    this.future = []
+  }
+
+  undo() {
+    if (!this.history.length) return
+    this.future.push(JSON.stringify(this.doc))
+    this.doc = JSON.parse(this.history.pop())
+    this.render()
+  }
+
+  redo() {
+    if (!this.future.length) return
+    this.history.push(JSON.stringify(this.doc))
+    this.doc = JSON.parse(this.future.pop())
+    this.render()
+  }
+
+  // Called on focus of any editable element — captures state before the user changes it
+  captureHistory() {
+    this.pushHistory()
+  }
+
+  handleKeydown(event) {
+    if (!(event.metaKey || event.ctrlKey) || event.key !== "z") return
+    event.preventDefault()
+    event.shiftKey ? this.redo() : this.undo()
   }
 
   // ─── Event Handlers ─────────────────────────────────────────────────────────
@@ -259,12 +295,14 @@ export default class extends Controller {
 
   deleteNode(event) {
     event.stopPropagation()
+    this.pushHistory()
     const path = this.parsePath(event.target)
     this.deleteAt(path)
     this.render()
   }
 
   addKey(event) {
+    this.pushHistory()
     const path = this.parsePath(event.target)
     const obj  = this.getAt(path)
     let key = "newKey"
@@ -287,6 +325,7 @@ export default class extends Controller {
   }
 
   addItem(event) {
+    this.pushHistory()
     const path = this.parsePath(event.target)
     this.getAt(path).push("")
     this.render()

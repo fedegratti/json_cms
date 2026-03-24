@@ -1,4 +1,5 @@
 .editor{ data: { controller: "json-editor",
+                  action: "keydown@window->json-editor#handleKeydown",
                   json_editor_json_value: @document.content,
                   json_editor_filename_value: @document.filename } }
 
