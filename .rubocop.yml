@@ -1,0 +1,93 @@
+plugins:
+  - rubocop-rails
+  - rubocop-rspec
+  - rubocop-rspec_rails
+  - rubocop-factory_bot
+  - rubocop-performance
+
+AllCops:
+  TargetRubyVersion: 3.2.2
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - 'db/schema.rb'
+    - 'db/migrate/*'
+    - 'bin/*'
+    - 'config/boot.rb'
+    - 'config/environment.rb'
+    - 'config/application.rb'
+    - 'config/environments/*'
+    - 'config/initializers/devise.rb'
+    - 'config/**/*'
+    - 'vendor/**/*'
+    - 'node_modules/**/*'
+    - 'tmp/**/*'
+    - 'storage/**/*'
+    - 'log/**/*'
+    - 'coverage/**/*'
+    - 'Rakefile'
+    - 'config.ru'
+
+# Style configurations
+Style/Documentation:
+  Enabled: false
+
+# Layout configurations
+# Layout/LineLength:
+#   Max: 120
+#   Exclude:
+#     - 'spec/**/*'
+
+# Layout/MultilineMethodCallIndentation:
+#   EnforcedStyle: indented
+
+# Metrics configurations
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+    - 'config/routes.rb'
+    - 'db/seeds.rb'
+
+Metrics/ModuleLength:
+  Exclude:
+    - 'spec/**/*'
+
+# Rails specific configurations
+Rails/ApplicationRecord:
+  Enabled: true
+
+Rails/HasManyOrHasOneDependent:
+  Enabled: true
+
+Rails/InverseOf:
+  Enabled: true
+
+Rails/SkipsModelValidations:
+  Enabled: false
+
+Rails/UnknownEnv:
+  Environments:
+    - production
+    - development
+    - test
+
+# RSpec specific configurations
+RSpec/ExampleLength:
+  Max: 15
+
+RSpec/MultipleExpectations:
+  Max: 5
+
+RSpec/NestedGroups:
+  Max: 5
+
+RSpec/DescribeClass:
+  Exclude:
+    - 'spec/requests/**/*'
+
+# Performance configurations
+Performance/CollectionLiteralInLoop:
+  Enabled: true
+
+Performance/StringReplacement:
+  Enabled: true

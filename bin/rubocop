@@ -1,0 +1,29 @@
+#!/bin/bash
+# RuboCop helper script
+
+case "$1" in
+  "check" | "")
+    echo "🔍 Running RuboCop checks..."
+    bundle exec rubocop
+    ;;
+  "fix")
+    echo "🔧 Auto-fixing RuboCop issues (safe)..."
+    bundle exec rubocop -a
+    ;;
+  "fix-all")
+    echo "🛠️  Auto-fixing ALL RuboCop issues (including unsafe)..."
+    bundle exec rubocop -A
+    ;;
+  "todo")
+    echo "📝 Generating .rubocop_todo.yml for existing issues..."
+    bundle exec rubocop --auto-gen-config
+    ;;
+  *)
+    echo "Usage: $0 {check|fix|fix-all|todo}"
+    echo "  check    - Run RuboCop checks (default)"
+    echo "  fix      - Auto-fix safe issues only"
+    echo "  fix-all  - Auto-fix all issues (including unsafe)"
+    echo "  todo     - Generate .rubocop_todo.yml for existing issues"
+    exit 1
+    ;;
+esac
