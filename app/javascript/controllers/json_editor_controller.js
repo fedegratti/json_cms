@@ -5,7 +5,7 @@ export default class extends Controller {
   static values  = { json: String, filename: String }
 
   connect() {
-    this.data      = this.safeParse(this.jsonValue)
+    this.doc       = this.safeParse(this.jsonValue)
     this.collapsed = new Set()
     this.render()
   }
@@ -23,11 +23,11 @@ export default class extends Controller {
   }
 
   getAt(path) {
-    return path.reduce((o, k) => (o != null ? o[k] : undefined), this.data)
+    return path.reduce((o, k) => (o != null ? o[k] : undefined), this.doc)
   }
 
   setAt(path, val) {
-    if (path.length === 0) { this.data = val; return }
+    if (path.length === 0) { this.doc = val; return }
     const parent = this.getAt(path.slice(0, -1))
     parent[path.at(-1)] = val
   }
@@ -57,7 +57,7 @@ export default class extends Controller {
   // ─── Rendering ──────────────────────────────────────────────────────────────
 
   render() {
-    this.treeTarget.innerHTML = this.node(this.data, [])
+    this.treeTarget.innerHTML = this.node(this.doc, [])
   }
 
   node(val, path) {
@@ -299,7 +299,7 @@ export default class extends Controller {
   }
 
   download() {
-    this.jsonInputTarget.value = JSON.stringify(this.data, null, 2)
+    this.jsonInputTarget.value = JSON.stringify(this.doc, null, 2)
     this.downloadFormTarget.submit()
   }
 }
